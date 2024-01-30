@@ -29,8 +29,9 @@ from requests.packages.urllib3.exceptions import InsecureRequestWarning
 
 from utils.flask_utils import flask_call
 from abstractions.block import Blockchain
-from server import BLOCK_PROPOSAL, REQUEST_DIFFICULTY, GET_BLOCKCHAIN, ADDRESS, PORT
+from server import BLOCK_PROPOSAL, REQUEST_DIFFICULTY, GET_BLOCKCHAIN, ADDRESS, PORT, GET_USERS
 from utils.view import visualize_blockchain, visualize_blockchain_terminal
+
 
 def main(argv):
     try:
@@ -49,12 +50,22 @@ def main(argv):
             if opt == "-i":
                 # INFO
                 if arg == "b":
-                    # TODO: GET INFO ABOUT BLOCKCHAIN
-                    print("To be implemented ...")
+                    _, blockchain, _ = flask_call('GET', GET_BLOCKCHAIN)
+                    if blockchain:
+                        b = Blockchain.load_json(json.dumps(blockchain))
+                        print(b)
+                    else:
+                        print("Failed to fetch blockchain info...")
                     valid_args = True
                 elif arg == "u":
-                    # TODO: GET INFO ABOUT USERS
-                    print("To be implemented ...")
+                    users_data, users, code = flask_call('GET', GET_USERS)
+                    print(users_data)
+                    print(users)
+                    print(code)
+                    if users:
+                        print(users_data)
+                    else:
+                        print("Could not parse users...")
                     valid_args = True
                 else:
                     valid_args = False
@@ -71,7 +82,8 @@ def main(argv):
                         b_chain = Blockchain.load_json(json.dumps(blockchain))
                         # saves the blockchain as pdf in "vis/blockchain/blockchain.pdf"
                         visualize_blockchain(b_chain.block_list, n_blocks=40)
-                        visualize_blockchain_terminal(b_chain.block_list, n_blocks=40)
+                        visualize_blockchain_terminal(
+                            b_chain.block_list, n_blocks=40)
                     valid_args = True
             if opt == "-d":
                 response, table, code = flask_call('GET', REQUEST_DIFFICULTY)
@@ -90,6 +102,7 @@ def main(argv):
     except KeyboardInterrupt as e:
         print(e)
 
+
 def connect_to_server():
     """
 
@@ -98,6 +111,7 @@ def connect_to_server():
     url = 'https://' + ADDRESS + ':' + PORT + '/'
     response = requests.get(url, verify=False)
     return response
+
 
 if __name__ == "__main__":
     requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
