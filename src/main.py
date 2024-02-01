@@ -54,7 +54,8 @@ def main(argv):
                     _, blockchain, _ = flask_call('GET', GET_BLOCKCHAIN)
                     if blockchain:
                         b = Blockchain.load_json(json.dumps(blockchain))
-                        visualize_blockchain_terminal(b.block_list, n_blocks=40)
+                        visualize_blockchain_terminal(
+                            b.block_list, n_blocks=40)
                         print(b.block_list[0].merkle_tree)
                     else:
                         print("Failed to fetch blockchain info...")
