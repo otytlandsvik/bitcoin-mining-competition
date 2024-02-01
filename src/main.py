@@ -53,15 +53,12 @@ def main(argv):
                     _, blockchain, _ = flask_call('GET', GET_BLOCKCHAIN)
                     if blockchain:
                         b = Blockchain.load_json(json.dumps(blockchain))
-                        print(b)
+                        visualize_blockchain_terminal(b.block_list, n_blocks=40)
                     else:
                         print("Failed to fetch blockchain info...")
                     valid_args = True
                 elif arg == "u":
                     users_data, users, code = flask_call('GET', GET_USERS)
-                    print(users_data)
-                    print(users)
-                    print(code)
                     if users:
                         print(users_data)
                     else:
