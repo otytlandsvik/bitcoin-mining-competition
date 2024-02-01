@@ -8,7 +8,7 @@ Assignment 1 - Blockchain Mining Competition
 
 Usage:
         -h                  : display usage information
-        -i [b, u]           : display information for blocks or users   #TODO
+        -i [b, u]           : display information for blocks or users
         -t                  : request N transactions                    #TODO
         -m                  : mine a block                              #TODO
         -v b                : visualize blockchain, saved to vis/blockchain/blockchain.pdf
@@ -54,6 +54,7 @@ def main(argv):
                     if blockchain:
                         b = Blockchain.load_json(json.dumps(blockchain))
                         visualize_blockchain_terminal(b.block_list, n_blocks=40)
+                        print(b.block_list[0].merkle_tree)
                     else:
                         print("Failed to fetch blockchain info...")
                     valid_args = True

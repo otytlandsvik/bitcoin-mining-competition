@@ -11,7 +11,7 @@ class Node:
 
     def __str__(self) -> str:
         if self.hash != None:
-            return f"[{self.tx} -> {self.hash}]"
+            return f"[{self.hash}]"
         elif self.left != None and self.right != None:
             return f"[{self.left.hash} + {self.right.hash} -> {self.hash}]"
         else:
@@ -57,7 +57,7 @@ class MerkleTree:
     def __str__(self) -> str:
         leaves = ""
         for l in self.leaf_nodes:
-            leaves += l.__str__()
+            leaves += f"{l.__str__()}\n"
 
         root = self.root.__str__() if self.root != None else "[ ]"
 
