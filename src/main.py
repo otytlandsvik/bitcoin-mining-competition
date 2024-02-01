@@ -26,10 +26,11 @@ import requests
 import json
 from datetime import datetime
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
+from abstractions.transaction import Transaction
 
 from utils.flask_utils import flask_call
 from abstractions.block import Blockchain
-from server import BLOCK_PROPOSAL, REQUEST_DIFFICULTY, GET_BLOCKCHAIN, ADDRESS, PORT, GET_USERS
+from server import BLOCK_PROPOSAL, REQUEST_DIFFICULTY, REQUEST_TXS, GET_BLOCKCHAIN, ADDRESS, PORT, GET_USERS
 from utils.view import visualize_blockchain, visualize_blockchain_terminal
 
 
@@ -68,8 +69,13 @@ def main(argv):
                 else:
                     valid_args = False
             if opt == "-t":
-                # TODO: Implement GET_TXS
-                print("To be implemented ...")
+                _, txs, _ = flask_call('GET', REQUEST_TXS)
+                if txs:
+                    for t in txs:
+                        x = Transaction.load_json(json.dumps(t))
+                        print("TRANSACTION: ----------------------------")
+                        print(f"Fee: {x.fee}")
+                        print(f"Amount: {x.amount}\n")
                 valid_args = True
             if opt == "-v":
                 if arg == "b":
