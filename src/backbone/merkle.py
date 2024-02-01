@@ -51,8 +51,8 @@ class MerkleTree:
 
         return Node(l, r, hash_function(l.hash + r.hash))
 
-    def get_root(self) -> Node:
-        return self.root
+    def get_root(self) -> str:
+        return self.root.hash
 
     def __str__(self) -> str:
         leaves = ""
