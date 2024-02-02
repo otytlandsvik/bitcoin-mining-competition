@@ -27,6 +27,7 @@ import json
 from datetime import datetime
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
 from abstractions.transaction import Transaction
+from backbone.consensus import mine_block
 
 from utils.flask_utils import flask_call
 from abstractions.block import Blockchain
@@ -45,7 +46,9 @@ def main(argv):
                 valid_args = True
                 break
             if opt == "-m":  # mine block
-                response, _, _ = flask_call('POST', BLOCK_PROPOSAL, data=None)
+                new_block = mine_block()
+                response, _, _ = flask_call(
+                    'POST', BLOCK_PROPOSAL, data=new_block.to_dict())
                 print(response)
                 valid_args = True
             if opt == "-i":
