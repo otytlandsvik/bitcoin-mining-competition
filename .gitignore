@@ -3,3 +3,4 @@ vis/blockchain/*
 vis/backup/*
 __pycache__
 btc_env/
+.vscode
