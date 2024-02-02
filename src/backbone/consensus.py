@@ -85,7 +85,8 @@ def create_block(prev_hash: str, height: int) -> Block:
     start_ts = datetime.now().timestamp()
 
     # Get difficulty
-    difficulty = get_difficulty_from_hash(prev_hash)
+    print(prev_hash)    # difficulty = get_difficulty_from_hash(prev_hash)
+    difficulty = 6
 
     txs, tx_hashes = get_txs()
 
@@ -110,7 +111,7 @@ def create_block(prev_hash: str, height: int) -> Block:
     time_spent = datetime.now().timestamp() - start_ts
 
     new_block = Block(new_hash, nonce, ts, time_spent, height,
-                      prev_hash, txs, mined_by=SELF, signature=save_signature(sig))
+                      prev_hash, txs, mined_by=SELF, signature=save_signature(bytes(sig)))
 
     print(new_block)
     return new_block
