@@ -22,7 +22,7 @@ class MerkleTree:
     def __init__(self, txs: list[str]) -> None:
         self.data = None
         self.leaf_nodes: list[Node] = self.insert_leaves(txs)
-        self.root = None
+        self.root = Node(None, None, "")
         self.build_tree()
 
     def insert_leaves(self, txs: list[str]) -> list[Node]:
@@ -51,8 +51,8 @@ class MerkleTree:
 
         return Node(l, r, hash_function(l.hash + r.hash))
 
-    def get_root(self) -> str:
-        return self.root.hash
+    def get_root(self) -> dict:
+        return {'hash': self.root.hash}
 
     def __str__(self) -> str:
         leaves = ""
