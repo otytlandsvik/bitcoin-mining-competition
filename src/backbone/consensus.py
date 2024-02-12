@@ -9,7 +9,7 @@ from abstractions.transaction import Transaction
 from backbone.merkle import MerkleTree
 from utils.cryptographic import double_hash, load_private, save_signature
 from utils.flask_utils import flask_call
-from server import SELF, REQUEST_TXS, GET_BLOCKCHAIN
+from server import GET_USERS, SELF, REQUEST_TXS, GET_BLOCKCHAIN
 from utils.view import get_difficulty_from_hash
 
 TXS_TO_INCLUDE = 4
@@ -77,16 +77,12 @@ def solve_pow(prev_hash: str, merkle_root: str, difficulty: int) -> Tuple[str, i
             return hash_, nonce, ts
 
 
-def create_block(prev_hash: str, height: int) -> Block:
+def create_block(difficulty: int, prev_hash: str, height: int) -> Block:
     """
     Create a block
     """
     # Time block creation
     start_ts = datetime.now().timestamp()
-
-    # Get difficulty
-    print(prev_hash)    # difficulty = get_difficulty_from_hash(prev_hash)
-    difficulty = 6
 
     txs, tx_hashes = get_txs()
 
@@ -101,7 +97,6 @@ def create_block(prev_hash: str, height: int) -> Block:
 
     # Solve PoW
     new_hash, nonce, ts = solve_pow(prev_hash, root, difficulty)
-    print(new_hash[:difficulty])
 
     # Sign block header
     b_hash = bytes(new_hash, 'utf-8')
@@ -111,10 +106,33 @@ def create_block(prev_hash: str, height: int) -> Block:
     time_spent = datetime.now().timestamp() - start_ts
 
     new_block = Block(new_hash, nonce, ts, time_spent, height,
-                      prev_hash, txs, mined_by=SELF, signature=save_signature(bytes(sig)))
+                      prev_hash, txs, mined_by=SELF, signature=bytes(sig))
 
-    print(new_block)
     return new_block
+
+
+def get_difficulty(n_confirmed: int) -> int:
+    """
+    Get difficulty based on number of confirmed blocks
+    """
+    try:
+        match n_confirmed:
+            case n if n < 10:
+                return 6
+            case n if n < 100:
+                return 7
+            case n if n < 200:
+                return 8
+            case n if n < 500:
+                return 9
+            case n if n > 500:
+                return 10
+        # Default
+        return 6
+    except:
+        # On wrong input
+        print("Wrong input to difficulty function")
+        return 6
 
 
 def mine_block() -> Block:
@@ -129,4 +147,15 @@ def mine_block() -> Block:
     parsed_chain = Blockchain.load_json(json.dumps(blockchain))
     ancestor_hash, new_height = select_ancestor(parsed_chain)
 
-    return create_block(ancestor_hash, new_height)
+    # Determine difficulty
+    difficulty = 6
+    _, users, code = flask_call('GET', GET_USERS)
+    if users:
+        for u in users:
+            try:
+                if u["username"] == "oty000":
+                    difficulty = get_difficulty(u["confirmed_blocks"])
+            except:
+                pass
+
+    return create_block(difficulty, ancestor_hash, new_height)

@@ -28,6 +28,7 @@ class MerkleTree:
     def insert_leaves(self, txs: list[str]) -> list[Node]:
         nodes = []
         for _hash in txs:
+            _hash = hash_function(_hash)
             nodes.append(Node(None, None, _hash))
         return nodes
 
